@@ -83,7 +83,7 @@ export function AppLayout() {
           <Link
             to="/"
             className="flex items-center gap-2 text-sm font-semibold"
-            aria-label={t("IP 网络工具概览")}
+            aria-label={t("Miao IPsec")}
           >
             <img src="/icon.svg" width="24" height="24" alt="" />
           </Link>
@@ -114,7 +114,7 @@ export function AppLayout() {
               )}
               <Link
                 to="/"
-                aria-label={t("IP 网络工具概览")}
+                aria-label={t("Miao IPsec")}
                 className="site-home-link flex size-9 shrink-0 items-center justify-center rounded-lg focus-visible:outline-2 focus-visible:outline-ring"
               >
                 <img src="/icon.svg" alt="" width="32" height="32" />
@@ -150,40 +150,7 @@ export function AppLayout() {
         <footer className="app-footer">
           © {new Date().getFullYear()} IP ·{" "}
           <UnderlineHover asChild>
-            <a
-              href="https://huzhihui.com/blog/one-ip-guide"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {t("使用文档")}
-            </a>
-          </UnderlineHover>{" "}
-          ·{" "}
-          <UnderlineHover asChild>
             <Link to="/docs/api">API</Link>
-          </UnderlineHover>{" "}
-          ·{" "}
-          <UnderlineHover asChild>
-            <Link to="/terms">{t("使用条款")}</Link>
-          </UnderlineHover>{" "}
-          ·{" "}
-          <UnderlineHover asChild>
-            <Link to="/privacy">{t("隐私政策")}</Link>
-          </UnderlineHover>{" "}
-          ·{" "}
-          <UnderlineHover asChild>
-            <a
-              href="https://github.com/zhihui-hu/one-ip"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 align-middle"
-            >
-              GitHub
-            </a>
-          </UnderlineHover>{" "}
-          ·{" "}
-          <UnderlineHover asChild>
-            <a href="mailto:ip@huzhihui.com">{t("联系作者")}</a>
           </UnderlineHover>
         </footer>
       </div>

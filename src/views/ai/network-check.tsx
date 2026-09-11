@@ -119,7 +119,16 @@ export function AiNetworkCheck({
                   </TableCell>
                   <TableCell className="ai-connectivity-exit text-muted-foreground">
                     <span className="sm:hidden">{t("出口 IP：")} </span>
-                    {exit.isFetching ? (
+                    {!platforms.find((item) => item?.domain === domain)
+                      ?.traceDomain ? (
+                      <span
+                        title={t(
+                          "该站点未提供可跨域读取的出口接口，仅能测量延迟。",
+                        )}
+                      >
+                        {t("跨域不可读")}
+                      </span>
+                    ) : exit.isFetching ? (
                       <Pending>{t("检测中…")}</Pending>
                     ) : exit.data?.ip ? (
                       <IpText ip={exit.data.ip} />

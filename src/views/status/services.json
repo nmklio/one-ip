@@ -3,11 +3,11 @@
     "id": "telegram",
     "name": "Telegram",
     "group": "社区",
-    "url": "",
+    "url": "https://api.telegram.org",
     "page": "https://t.me/s/telegram",
     "icon": "https://icons.duckduckgo.com/ip3/telegram.org.ico",
     "officialStatus": false,
-    "note": "暂未接入 Telegram 官方实时状态接口，请查看官方公告；待确认不代表服务故障。"
+    "note": "非官方检测：通过 Telegram Bot API 可达性判断，仅供参考，不代表官方状态。"
   },
   {
     "id": "0",
