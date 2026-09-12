@@ -197,4 +197,11 @@ else:
         print('  无需修改')
 PYEOF
 
+echo '=== [8/8] 归属地查询修复（并发竞速 + 兜底源）==='
+if [ -f patch-geo-fallback.py ]; then
+  python3 patch-geo-fallback.py
+else
+  echo '  ! 缺少 patch-geo-fallback.py'
+fi
+
 echo '=== 自定义应用完成 ==='

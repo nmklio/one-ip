@@ -7,21 +7,22 @@ export const getMyIp = (signal?: AbortSignal) =>
 export async function getGeo(
   ip: string,
   signal?: AbortSignal,
-  timeoutMs = 3000,
+  timeoutMs = 8000,
 ): Promise<Geo> {
   const timeout = AbortSignal.timeout(timeoutMs);
-  signal = signal ? AbortSignal.any([signal, timeout]) : timeout;
-  const options = () => ({ signal });
-  try {
+  const merged = signal ? AbortSignal.any([signal, timeout]) : timeout;
+  // 两个数据源并发查询，谁先返回有效结果用谁：单个数据源可能被限流或响应很慢，
+  // 串行等待会让兜底源失去时间窗口，整块归属信息直接不可用。
+  const ipSb = (async () => {
     const data = await request<Geo>(
       `https://api.ip.sb/geoip/${encodeURIComponent(ip)}`,
-      options(),
+      { signal: merged },
     );
     if (!data.ip || (!data.country && !data.isp))
       throw new Error(t("归属信息不完整"));
     return { ...data, ip, source: "ip.sb" };
-  } catch {
-    signal?.throwIfAborted();
+  })();
+  const ipWho = (async () => {
     const data = await request<{
       success: boolean;
       country?: string;
@@ -32,7 +33,7 @@ export async function getGeo(
       latitude?: number;
       longitude?: number;
       timezone?: { id?: string };
-    }>(`https://ipwho.is/${encodeURIComponent(ip)}`, options());
+    }>(`https://ipwho.is/${encodeURIComponent(ip)}`, { signal: merged });
     if (!data.success) throw new Error(t("归属信息暂不可用，请稍后重试"));
     return {
       ip,
@@ -47,6 +48,20 @@ export async function getGeo(
       timezone: data.timezone?.id,
       source: "ipwho.is",
     };
+  })();
+  try {
+    return await Promise.any([ipSb, ipWho]);
+  } catch {
+    merged.throwIfAborted();
+    // 浏览器侧两个源都失败（本地网络限制或数据源限流）时，再走本站 Worker 兜底。
+    try {
+      return await endpoint<Geo>(`/geoip/${encodeURIComponent(ip)}`, {
+        signal: merged,
+      });
+    } catch {
+      merged.throwIfAborted();
+      throw new Error(t("归属信息暂不可用，请稍后重试"));
+    }
   }
 }
 export async function getDomesticIp(signal?: AbortSignal): Promise<Geo> {
