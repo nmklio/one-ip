@@ -204,4 +204,11 @@ else
   echo '  ! 缺少 patch-geo-fallback.py'
 fi
 
+echo '=== [9/9] AI 出口与 CDN 节点读取修复（同源接口）==='
+if [ -f patch-ai-exit.py ]; then
+  python3 patch-ai-exit.py
+else
+  echo '  ! 缺少 patch-ai-exit.py'
+fi
+
 echo '=== 自定义应用完成 ==='

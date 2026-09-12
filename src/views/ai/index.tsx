@@ -8,7 +8,7 @@ import {
 } from "@/components/toolkit";
 import { t } from "@/i18n";
 import { trace } from "@/lib/network";
-import { getGeo, getDomesticIp } from "@/views/home/api";
+import { getGeo, getDomesticIp, getMyIp } from "@/views/home/api";
 import { useQuery } from "@tanstack/react-query";
 import { AiNetworkCheck } from "./network-check";
 import { AiPlatformLinks } from "./platform-links";
@@ -40,7 +40,9 @@ export default function PlatformDiagnostics({
   });
   const cf = useQuery({
     queryKey: ["cf-exit"],
-    queryFn: ({ signal }) => trace("1.1.1.1", signal),
+    // 1.1.1.1 在部分网络（尤其国内）不可达，改用同源的 Worker 接口，
+    // 它同样由 Cloudflare 边缘返回访客 IP。
+    queryFn: ({ signal }) => getMyIp(signal),
     retry: false,
   });
   return (

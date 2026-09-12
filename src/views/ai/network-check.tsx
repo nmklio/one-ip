@@ -42,9 +42,10 @@ export function AiNetworkCheck({
   const exits = useQueries({
     queries: platforms.map((platform, index) => ({
       queryKey: [platform?.id ?? domains[index], "exit"],
-      enabled: Boolean(platform?.traceDomain),
+      // 无 traceDomain 的域名也直接尝试 trace，读不到再标注跨域不可读。
+      enabled: true,
       queryFn: ({ signal }: { signal: AbortSignal }) =>
-        trace(platform!.traceDomain!, signal),
+        trace(platforms[index]?.traceDomain ?? domains[index], signal),
       staleTime: 60_000,
       retry: false,
       refetchOnWindowFocus: false,
@@ -79,9 +80,7 @@ export function AiNetworkCheck({
                 const [next] = await withDetectionAnimation(() =>
                   Promise.all([
                     query.refetch({ throwOnError: true }),
-                    ...exits
-                      .filter((_, index) => platforms[index]?.traceDomain)
-                      .map((exit) => exit.refetch()),
+                    ...exits.map((exit) => exit.refetch()),
                   ]),
                 );
                 if (next.data?.every((result) => result.median != null))
@@ -119,22 +118,17 @@ export function AiNetworkCheck({
                   </TableCell>
                   <TableCell className="ai-connectivity-exit text-muted-foreground">
                     <span className="sm:hidden">{t("出口 IP：")} </span>
-                    {!platforms.find((item) => item?.domain === domain)
-                      ?.traceDomain ? (
+                    {exit.isFetching ? (
+                      <Pending>{t("检测中…")}</Pending>
+                    ) : exit.data?.ip ? (
+                      <IpText ip={exit.data.ip} />
+                    ) : (
                       <span
                         title={t(
                           "该站点未提供可跨域读取的出口接口，仅能测量延迟。",
                         )}
                       >
                         {t("跨域不可读")}
-                      </span>
-                    ) : exit.isFetching ? (
-                      <Pending>{t("检测中…")}</Pending>
-                    ) : exit.data?.ip ? (
-                      <IpText ip={exit.data.ip} />
-                    ) : (
-                      <span title={t("未获取到出口，可能受跨域或连接限制。")}>
-                        {t("暂不可用")}
                       </span>
                     )}
                   </TableCell>

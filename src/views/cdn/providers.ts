@@ -3,7 +3,8 @@ import { t } from "@/i18n";
 export const providers = [
   {
     name: "Cloudflare",
-    url: "https://www.cloudflare.com/cdn-cgi/trace",
+    // 同源读取：本站由 Cloudflare 边缘提供服务，/cdn-cgi/trace 可直接拿到 colo。
+    url: "/cdn-cgi/trace",
     trace: true,
   },
   {
