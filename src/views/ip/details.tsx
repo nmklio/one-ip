@@ -3,15 +3,17 @@ import { Link } from "react-router-dom";
 import { CopyButton } from "@/components/copy-button";
 import { CountryFlag } from "@/components/country-flag";
 import { NumberTicker } from "@/components/number-ticker";
-import { IpText, ToolCard, DataTable } from "@/components/toolkit";
+import { IpText, ToolCard, DataTable, Pending } from "@/components/toolkit";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { t } from "@/i18n";
 import { companyTypeColors } from "@/lib/ip-badge-colors";
 import { ipScoreColor } from "@/lib/ip-score";
+import { endpoint } from "@/lib/network";
 import type { Geo } from "@/lib/types";
 import { hideIpAtom } from "@/store/privacy";
+import { useQuery } from "@tanstack/react-query";
 import { useAtom } from "jotai";
 import { Eye, EyeOff } from "lucide-react";
 import type { CoffeeLookup } from "./coffee";
@@ -76,6 +78,31 @@ export function IpDetails({
     d.trust_score <= 100
       ? d.trust_score
       : null;
+  const dnsbl = useQuery({
+    queryKey: ["ip-intel-dnsbl", d.ip],
+    queryFn: ({ signal }) =>
+      endpoint<{
+        ip: string;
+        source: string;
+        checked_at: string;
+        zones: { name: string; listed: boolean | null; record?: string }[];
+        listed_count: number;
+        listed_names: string[];
+      }>(`/ip/intel?ip=${encodeURIComponent(d.ip)}`, { signal }),
+    staleTime: 300_000,
+    retry: false,
+  });
+  // VPN 线索：同一次查询里已有布尔标记，直接推导成可读线索。
+  const vpnHintLabels: string[] = [];
+  if (d.is_vpn === true) vpnHintLabels.push(t("VPN 标记"));
+  if (d.is_proxy === true) vpnHintLabels.push(t("代理标记"));
+  if (d.is_mobile === true) vpnHintLabels.push(t("移动网络"));
+  if (d.is_datacenter === true)
+    vpnHintLabels.push(
+      d.datacenter_name
+        ? `${t("数据中心")} · ${d.datacenter_name}`
+        : t("数据中心"),
+    );
   const rpki: Record<string, string> = {
     valid: t("有效"),
     invalid: t("无效"),
@@ -239,17 +266,39 @@ export function IpDetails({
             [t("滥用等级"), d.intelligence?.abuser_level],
             [
               t("HTTP 蜜罐黑名单"),
-              d.intelligence?.rep_threat == null
-                ? chip(t("未知"))
-                : JSON.stringify(d.intelligence.rep_threat),
+              dnsbl.isFetching ? (
+                <Pending key="hb">{t("检测中…")}</Pending>
+              ) : dnsbl.data ? (
+                dnsbl.data.listed_count ? (
+                  chip(
+                    `${t("命中")} ${dnsbl.data.listed_count}/${dnsbl.data.zones.length}（${dnsbl.data.listed_names.join("、")}）`,
+                    "bad",
+                  )
+                ) : (
+                  chip(t("未命中（4 个公开黑名单源）"), "good")
+                )
+              ) : d.intelligence?.rep_threat == null ? (
+                chip(t("未知"))
+              ) : (
+                JSON.stringify(d.intelligence.rep_threat)
+              ),
             ],
             [
               t("VPN 线索"),
-              d.vpn_trace == null
-                ? "—"
-                : typeof d.vpn_trace === "string"
-                  ? d.vpn_trace
-                  : JSON.stringify(d.vpn_trace),
+              (() => {
+                const parts: string[] = [];
+                if (typeof d.vpn_trace === "string" && d.vpn_trace.trim())
+                  parts.push(d.vpn_trace.trim());
+                else if (d.vpn_trace != null)
+                  parts.push(JSON.stringify(d.vpn_trace));
+                if (vpnHintLabels.length) parts.push(vpnHintLabels.join(" · "));
+                return parts.length
+                  ? chip(
+                      parts.join(" · "),
+                      d.is_vpn || d.is_proxy ? "warn" : "neutral",
+                    )
+                  : chip(t("未发现 VPN / 代理标记"), "good");
+              })(),
             ],
             [t("访问评估"), d.ai_verdict?.label],
             [

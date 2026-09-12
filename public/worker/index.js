@@ -5,6 +5,7 @@ import { cfGeo, geoIp, secondaryGeo } from "./geo.js";
 import { HttpError, inputJson, json, publicIp } from "./http.js";
 import { siteIcon } from "./icons.js";
 import { ipHealth } from "./ip-health.js";
+import { ipIntel } from "./ip-intel.js";
 import { ipNetwork } from "./ip-network.js";
 import { ipType } from "./ip-type.js";
 import { startPing, pingResult, pingNodes } from "./ping.js";
@@ -69,6 +70,7 @@ export default {
         return json(data);
       }
       if (path === "/ip/health") return await ipHealth(request, env);
+      if (path === "/ip/intel") return await ipIntel(request);
       if (path.startsWith("/ip-type/"))
         return await ipType(decodeURIComponent(path.slice(9)), url.origin);
       if (path.startsWith("/geoip/"))

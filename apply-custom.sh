@@ -211,4 +211,11 @@ else
   echo '  ! 缺少 patch-ai-exit.py'
 fi
 
+echo '=== [10/10] IP 情报补数据（DNSBL 黑名单 + VPN 线索推导）==='
+if [ -f patch-intel.py ]; then
+  python3 patch-intel.py
+else
+  echo '  ! missing patch-intel.py'
+fi
+
 echo '=== 自定义应用完成 ==='
