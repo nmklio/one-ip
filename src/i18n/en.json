@@ -1370,5 +1370,13 @@
   "该站点未提供可跨域读取的出口接口，仅能测量延迟。": "This site does not expose a cross-origin readable egress endpoint; only latency can be measured.",
   "API 可达（非官方检测）": "API reachable (unofficial check)",
   "响应异常（非官方检测）": "Abnormal response (unofficial check)",
-  "API 不可达（非官方检测）": "API unreachable (unofficial check)"
+  "API 不可达（非官方检测）": "API unreachable (unofficial check)",
+  "第三方来源：UptimeRobot。仅监测 telegram.org 网站可用性，不代表 Telegram 全球消息收发状态；数据过期或不可用时显示待确认。": "Third-party source: UptimeRobot. Monitors telegram.org website availability only, not global Telegram messaging. Stale or unavailable data is shown as unconfirmed.",
+  "第三方 · {0} ↗": "Third party · {0} ↗",
+  "各服务运行状态与故障事件，第三方来源单独标注": "Service status and incidents; third-party sources are labeled separately",
+  "此数据源仅提供汇总状态，事件详情请查看来源页面。": "This source provides aggregate status only. See the source page for incident details.",
+  "第三方状态数据暂不可用": "Third-party status data is unavailable",
+  "第三方网站监测正常": "Third-party website monitor: operational",
+  "第三方网站监测异常": "Third-party website monitor: outage",
+  "来源检测时间：{0}": "Source checked at: {0}"
 }

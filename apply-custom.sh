@@ -27,30 +27,7 @@ else:
 PYEOF
 
 echo '=== [2/5] Telegram 状态接入（可达性检测）==='
-python3 - <<'PYEOF'
-import json, os
-NEW_NOTE_ZH = '非官方检测：通过 Telegram Bot API 可达性判断，仅供参考，不代表官方状态。'
-NEW_NOTE_EN = 'Unofficial check: based on Telegram Bot API reachability, for reference only; not an official status feed.'
-p1 = 'src/views/status/services.json'
-if os.path.exists(p1):
-    d = json.load(open(p1, encoding='utf-8'))
-    changed = False
-    for s in d:
-        if s.get('id') == 'telegram':
-            if s.get('url') != 'https://api.telegram.org' or s.get('note') != NEW_NOTE_ZH:
-                s['url'] = 'https://api.telegram.org'
-                s['note'] = NEW_NOTE_ZH
-                changed = True
-    json.dump(d, open(p1, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
-    print('  services.json:', '已更新' if changed else '无需修改')
-p3 = 'src/i18n/en.json'
-if os.path.exists(p3):
-    en = json.load(open(p3, encoding='utf-8'))
-    if en.get(NEW_NOTE_ZH) != NEW_NOTE_EN:
-        en[NEW_NOTE_ZH] = NEW_NOTE_EN
-        json.dump(en, open(p3, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
-        print('  en.json: 已补充翻译')
-PYEOF
+python3 -c "print('  已跳过：该功能已由上游原生实现（同步后原生自带）')"
 
 echo '=== [3/5] 品牌名统一为 Miao IPsec ==='
 python3 - <<'PYEOF'
@@ -117,105 +94,9 @@ else
 fi
 
 echo '=== [6/6] Worker 内置 Telegram 可达性接口 ==='
-python3 - <<'PYEOF'
-import os
-p = 'public/worker/index.js'
-if not os.path.exists(p):
-    print('  ! 缺少 public/worker/index.js')
-else:
-    s = open(p, encoding='utf-8').read()
-    if '"/status/telegram"' in s:
-        print('  已存在 Telegram 接口，跳过')
-    else:
-        anchor = '      if (path.startsWith("/status/")) {'
-        block = '''      if (path === "/status/telegram") {
-        try {
-          const res = await fetch(
-            "https://api.telegram.org/bot0:invalid/getMe",
-            {
-              headers: { accept: "application/json" },
-              cf: { cacheTtl: 60 },
-            },
-          );
-          const text = await res.text();
-          const reachable =
-            res.status === 401 || /"ok"\\s*:\\s*(true|false)/.test(text);
-          return json({
-            status: {
-              indicator: reachable ? "none" : "minor",
-              description: reachable
-                ? "API 可达（非官方检测）"
-                : "响应异常（非官方检测）",
-            },
-            incidents: [],
-            fetchedAt: new Date().toISOString(),
-            source: "https://api.telegram.org (reachability)",
-          });
-        } catch {
-          return json({
-            status: {
-              indicator: "critical",
-              description: "API 不可达（非官方检测）",
-            },
-            incidents: [],
-            fetchedAt: new Date().toISOString(),
-            source: "https://api.telegram.org (reachability)",
-          });
-        }
-      }
-'''
-        if anchor in s:
-            s = s.replace(anchor, block + anchor, 1)
-            open(p, 'w', encoding='utf-8').write(s)
-            print('  已插入 /status/telegram 分支')
-        else:
-            print('  ! 未找到插入锚点')
-PYEOF
+python3 -c "print('  已跳过：该功能已由上游原生实现（同步后原生自带）')"
 
 echo '=== [7/7] 补充 Telegram 状态相关英文翻译 ==='
-python3 - <<'PYEOF'
-import json, os
-p = 'src/i18n/en.json'
-if not os.path.exists(p):
-    print('  ! 缺少 en.json')
-else:
-    en = json.load(open(p, encoding='utf-8'))
-    additions = {
-        'API 可达（非官方检测）': 'API reachable (unofficial check)',
-        '响应异常（非官方检测）': 'Abnormal response (unofficial check)',
-        'API 不可达（非官方检测）': 'API unreachable (unofficial check)',
-    }
-    changed = 0
-    for k, v in additions.items():
-        if en.get(k) != v:
-            en[k] = v
-            changed += 1
-    if changed:
-        json.dump(en, open(p, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
-        print(f'  已新增 {changed} 条')
-    else:
-        print('  无需修改')
-PYEOF
-
-echo '=== [8/8] 归属地查询修复（并发竞速 + 兜底源）==='
-if [ -f patch-geo-fallback.py ]; then
-  python3 patch-geo-fallback.py
-else
-  echo '  ! 缺少 patch-geo-fallback.py'
-fi
-
-echo '=== [9/9] AI 出口与 CDN 节点读取修复（同源接口）==='
-if [ -f patch-ai-exit.py ]; then
-  python3 patch-ai-exit.py
-else
-  echo '  ! 缺少 patch-ai-exit.py'
-fi
-
-echo '=== [10/10] IP 情报补数据（DNSBL 黑名单 + VPN 线索推导）==='
-if [ -f patch-intel.py ]; then
-  python3 patch-intel.py
-else
-  echo '  ! missing patch-intel.py'
-fi
+python3 -c "print('  已跳过：该功能已由上游原生实现（同步后原生自带）')"
 
 echo '=== 自定义应用完成 ==='

@@ -107,41 +107,6 @@ export default {
         return json(await startPing(await inputJson(request)));
       if (path.startsWith("/ping/result/"))
         return json(await pingResult(path.slice(13)));
-      if (path === "/status/telegram") {
-        try {
-          const res = await fetch(
-            "https://api.telegram.org/bot0:invalid/getMe",
-            {
-              headers: { accept: "application/json" },
-              cf: { cacheTtl: 60 },
-            },
-          );
-          const text = await res.text();
-          const reachable =
-            res.status === 401 || /"ok"\s*:\s*(true|false)/.test(text);
-          return json({
-            status: {
-              indicator: reachable ? "none" : "minor",
-              description: reachable
-                ? "API 可达（非官方检测）"
-                : "响应异常（非官方检测）",
-            },
-            incidents: [],
-            fetchedAt: new Date().toISOString(),
-            source: "https://api.telegram.org (reachability)",
-          });
-        } catch {
-          return json({
-            status: {
-              indicator: "critical",
-              description: "API 不可达（非官方检测）",
-            },
-            incidents: [],
-            fetchedAt: new Date().toISOString(),
-            source: "https://api.telegram.org (reachability)",
-          });
-        }
-      }
       if (path.startsWith("/status/")) {
         const service = services.find((s) => s.id === path.slice(8));
         if (!service) throw new HttpError(404, "未知服务");

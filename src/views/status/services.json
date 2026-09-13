@@ -3,11 +3,12 @@
     "id": "telegram",
     "name": "Telegram",
     "group": "社区",
-    "url": "https://api.telegram.org",
-    "page": "https://t.me/s/telegram",
+    "url": "https://uptimerobot.com/api/pulse/monitors/telegram",
+    "page": "https://uptimerobot.com/is-it-down/telegram/",
+    "statusSource": "UptimeRobot",
     "icon": "https://icons.duckduckgo.com/ip3/telegram.org.ico",
     "officialStatus": false,
-    "note": "非官方检测：通过 Telegram Bot API 可达性判断，仅供参考，不代表官方状态。"
+    "note": "第三方来源：UptimeRobot。仅监测 telegram.org 网站可用性，不代表 Telegram 全球消息收发状态；数据过期或不可用时显示待确认。"
   },
   {
     "id": "0",
