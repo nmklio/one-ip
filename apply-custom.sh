@@ -99,4 +99,11 @@ python3 -c "print('  已跳过：该功能已由上游原生实现（同步后�
 echo '=== [7/7] 补充 Telegram 状态相关英文翻译 ==='
 python3 -c "print('  已跳过：该功能已由上游原生实现（同步后原生自带）')"
 
+echo '=== [11/11] 连通性检测目标修复（1.1.1.1 国内被墙）==='
+if [ -f patch-1111.py ]; then
+  python3 patch-1111.py
+else
+  echo '  ! missing patch-1111.py'
+fi
+
 echo '=== 自定义应用完成 ==='

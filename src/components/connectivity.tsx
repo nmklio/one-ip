@@ -99,7 +99,7 @@ export const homeTargets: Target[] = [
   {
     name: "Cloudflare",
     icon: "https://icons.duckduckgo.com/ip3/cloudflare.com.ico",
-    url: "https://1.1.1.1/cdn-cgi/trace",
+    url: "https://www.cloudflare.com/cdn-cgi/trace",
   },
   {
     name: "YouTube",
