@@ -1,5 +1,6 @@
-# Miao IPsec: HTML 永不缓存（SPA 必须每次拿最新 index.html）
-# 哈希资源永久缓存（内容变了文件名就变，安全）
+# Miao IPsec: HTML 永不缓存；哈希资源永久缓存（内容变了文件名就变）
+# 注意：Cloudflare 的 _headers 会把多个规则的 Cache-Control 合并，
+# 所以必须用 ! 前缀先移除上一层的 Cache-Control，再设自己的值。
 /*
   Cache-Control: no-store, no-cache, must-revalidate
   Content-Security-Policy: frame-ancestors 'none'
@@ -8,16 +9,21 @@
   Referrer-Policy: strict-origin-when-cross-origin
 
 /assets/*
+  ! Cache-Control
   Cache-Control: public, max-age=31536000, immutable
 
 /favicon.ico
+  ! Cache-Control
   Cache-Control: public, max-age=604800
 
 /favicon.svg
+  ! Cache-Control
   Cache-Control: public, max-age=604800
 
 /icon.svg
+  ! Cache-Control
   Cache-Control: public, max-age=604800
 
 /icon-knockout.svg
+  ! Cache-Control
   Cache-Control: public, max-age=604800
