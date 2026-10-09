@@ -1,3 +1,23 @@
+# Miao IPsec: HTML 永不缓存（SPA 必须每次拿最新 index.html）
+# 哈希资源永久缓存（内容变了文件名就变，安全）
 /*
+  Cache-Control: no-store, no-cache, must-revalidate
   Content-Security-Policy: frame-ancestors 'none'
   X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.ico
+  Cache-Control: public, max-age=604800
+
+/favicon.svg
+  Cache-Control: public, max-age=604800
+
+/icon.svg
+  Cache-Control: public, max-age=604800
+
+/icon-knockout.svg
+  Cache-Control: public, max-age=604800
