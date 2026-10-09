@@ -14,6 +14,36 @@
   <title>Miao IPsec</title>
   <meta name="description" content="IP 查询、网站分流、WebRTC 检测、全球 Ping、服务状态和 WHOIS 查询工具。" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Miao IPsec: miao7-chunk-reload-guard
+      // Auto reload once when a stale HTML references a replaced JS hash.
+      (function () {
+        var KEY = "miao7-chunk-reload-at";
+        function reloadOnce() {
+          try {
+            var last = Number(sessionStorage.getItem(KEY) || 0);
+            if (Date.now() - last < 60000) return;
+            sessionStorage.setItem(KEY, String(Date.now()));
+          } catch (e) {}
+          window.location.reload();
+        }
+        window.addEventListener("error", function (e) {
+          var t = e.target;
+          if (t && (t.tagName === "SCRIPT" || t.tagName === "LINK")) reloadOnce();
+        }, true);
+        window.addEventListener("unhandledrejection", function () {
+          try { if (!window.__MIAO7_BOOTED__) reloadOnce(); } catch (e) {}
+        });
+        window.addEventListener("DOMContentLoaded", function () {
+          setTimeout(function () {
+            try {
+              var root = document.getElementById("root");
+              if (root && root.children.length === 0) reloadOnce();
+            } catch (e) {}
+          }, 8000);
+        });
+      })();
+    </script>
   <script>
     // Classic ES5 script: IE cannot execute the application's module bundle.
     (function () {
