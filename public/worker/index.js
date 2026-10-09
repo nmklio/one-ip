@@ -22,6 +22,26 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === "/worker" || url.pathname.startsWith("/worker/"))
       return new Response("Not found", { status: 404 });
+    // -------- MIAO7_ASSET_404_GUARD --------
+    // SPA 的 not_found_handling 会让「不存在的静态资源」返回 200 + index.html，
+    // 而 /assets/* 是 immutable 长缓存，一旦缓存了这个 HTML 就永久坏掉。
+    // 这里把「HTML 冒充资源」的响应改成真 404 且不缓存。
+    if (url.pathname.startsWith("/assets/")) {
+      const assetRes = await env.ASSETS.fetch(request);
+      const ctype = (assetRes.headers.get("content-type") || "").toLowerCase();
+      if (ctype.includes("text/html")) {
+        return new Response("Not Found", {
+          status: 404,
+          headers: {
+            "content-type": "text/plain; charset=utf-8",
+            "cache-control": "no-store, no-cache, must-revalidate",
+            "x-miao7-asset-guard": "1",
+          },
+        });
+      }
+      return assetRes;
+    }
+    // -------- /MIAO7_ASSET_404_GUARD --------
     if (!url.pathname.startsWith("/api/")) {
       if (env.LOCAL_DEV === "true") {
         url.hostname = "127.0.0.1";
