@@ -107,7 +107,7 @@ export async function collectCandidates(
 }
 export async function runWebRtc(_: void, signal: AbortSignal) {
   const [baseline, candidates] = await Promise.all([
-    trace("1.1.1.1", signal).catch(() => null),
+    trace("www.cloudflare.com", signal).catch(() => null),
     collectCandidates(signal),
   ]);
   const results = await Promise.all(

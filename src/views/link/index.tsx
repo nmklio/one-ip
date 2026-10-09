@@ -237,7 +237,7 @@ function ConnectivityGroup({
 
 export default function LinkPage() {
   useEffect(() => {
-    document.title = t("网站连通与出口 - IP 网络工具");
+    document.title = t("网站连通与出口 - Miao IPsec");
   }, []);
   return (
     <>

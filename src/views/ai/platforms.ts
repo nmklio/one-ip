@@ -68,6 +68,7 @@ export const aiPlatforms = [
   },
   {
     id: "kimi",
+    traceDomain: "www.kimi.com",
     apiUrl: "https://api.moonshot.cn/v1",
     docsUrl: "https://platform.moonshot.cn/docs/intro",
     statusId: "35",
