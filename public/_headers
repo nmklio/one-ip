@@ -1,6 +1,5 @@
-# Miao IPsec: HTML 永不缓存；哈希资源永久缓存（内容变了文件名就变）
-# 注意：Cloudflare 的 _headers 会把多个规则的 Cache-Control 合并，
-# 所以必须用 ! 前缀先移除上一层的 Cache-Control，再设自己的值。
+# Miao IPsec 缓存策略
+# HTML 永不缓存；静态资源短 TTL（防「HTML 冒充 JS」被长期缓存污染）
 /*
   Cache-Control: no-store, no-cache, must-revalidate
   Content-Security-Policy: frame-ancestors 'none'
@@ -8,22 +7,25 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
+# 关键：不要用 immutable/长 TTL。
+# SPA 兜底曾经把 index.html 当作 xxx.js 返回并被永久缓存，导致部分节点永久损坏。
+# 改成 5 分钟 + 重新验证，任何污染最多 5 分钟自愈。
 /assets/*
   ! Cache-Control
-  Cache-Control: public, max-age=31536000, immutable
+  Cache-Control: public, max-age=300, must-revalidate
 
 /favicon.ico
   ! Cache-Control
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600
 
 /favicon.svg
   ! Cache-Control
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600
 
 /icon.svg
   ! Cache-Control
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600
 
 /icon-knockout.svg
   ! Cache-Control
-  Cache-Control: public, max-age=604800
+  Cache-Control: public, max-age=3600
