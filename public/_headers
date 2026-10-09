@@ -1,5 +1,8 @@
 # Miao IPsec 缓存策略
-# HTML 永不缓存；静态资源短 TTL（防「HTML 冒充 JS」被长期缓存污染）
+# HTML 永不缓存；静态资源 max-age=300 + stale-while-revalidate=86400
+#   -> 5 分钟内直接命中缓存
+#   -> 5 分钟后【先返回缓存 0 延迟】，同时后台静默重新验证
+#   -> 万一被 SPA 兜底污染，最多 5 分钟自愈（不会像 immutable 那样永久坏掉）
 /*
   Cache-Control: no-store, no-cache, must-revalidate
   Content-Security-Policy: frame-ancestors 'none'
@@ -7,25 +10,22 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
 
-# 关键：不要用 immutable/长 TTL。
-# SPA 兜底曾经把 index.html 当作 xxx.js 返回并被永久缓存，导致部分节点永久损坏。
-# 改成 5 分钟 + 重新验证，任何污染最多 5 分钟自愈。
 /assets/*
   ! Cache-Control
-  Cache-Control: public, max-age=300, must-revalidate
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
 
 /favicon.ico
   ! Cache-Control
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /favicon.svg
   ! Cache-Control
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /icon.svg
   ! Cache-Control
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /icon-knockout.svg
   ! Cache-Control
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
